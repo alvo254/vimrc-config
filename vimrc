@@ -1,5 +1,12 @@
 syntax on
+set tabstop=4
+filetype on
+set ruler
+set mouse=a
+set list
+set expandtab
 
+set autoindent
 set noerrorbells
 set tabstop=4 softtabstop=4
 set shiftwidth=4
@@ -18,6 +25,28 @@ set colorcolumn=80
 highlight ColorColumn ctermbg=0 guibg=lightgrey
 
 call plug#begin('~/.vim/plugged')
+
+Plug 'ciaranm/securemodelines'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'justinmk/vim-sneak'
+Plug 'itchyny/lightline.vim'
+Plug 'machakann/vim-highlightedyank'
+Plug 'andymass/vim-matchup'
+Plug 'rust-lang/rust.vim'
+Plug 'w0rp/ale'
+Plug 'airblade/vim-rooter'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+
+
+"Thist are completion sources
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-path'
+
+Plug 'neoclide/coc-rls'
+
 
 Plug 'morhetz/gruvbox'
 Plug 'jremmen/vim-ripgrep'
@@ -48,6 +77,28 @@ Plug 'HerringtonDarkholme/yats.vim' " TS Syntax
 
 " Initialize plugin system
 call plug#end()
+
+" IMPORTANT: :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone,noselect
+
+autocmd BufEnter * call ncm2#enable_for_buffer()
+
+"ale configuration
+set omnifunc=ale#completion#OmniFunc
+let g:ale_completion_enabled = 1
+let g:ale_completion_autoimport = 1
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = ‘✗’
+let g:ale_sign_warning = ‘’
+
+if executable('rls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'rls',
+        \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
+        \ 'whitelist': ['rust'],
+        \ })
+endif 
+
 
 inoremap jk <ESC>
 nmap <C-n> :NERDTreeToggle<CR>
@@ -84,6 +135,21 @@ command! -nargs=0 Prettier :CocCommand prettier.formatFile
 "let g:prettier#autoformat = 0
 "autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
 
+" rust
+let g:rustfmt_autosave = 1
+let g:rustfmt_emit_files = 1
+let g:rustfmt_fail_silently = 0
+let g:rust_clip_command = 'xclip -selection clipboard'
+" Completion
+" Better completion
+" menuone: popup even when there's only one match
+" noinsert: Do not insert text until a selection is made
+" noselect: Do not select, force user to select one from the menu
+set completeopt=menuone,noinsert,noselect
+" Better display for messages
+set cmdheight=2
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
 
 " ctrlp
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
@@ -92,14 +158,7 @@ let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclu
 noremap <silent> <expr> j (v:count == 0 ? 'gj' : 'j')
 noremap <silent> <expr> k (v:count == 0 ? 'gk' : 'k')
 
-set relativenumber
 
-set smarttab
-set cindent
-"set tabstop=2
-set shiftwidth=2
-" always uses spaces instead of tab characters
-set expandtab
 
 colorscheme gruvbox
 
@@ -279,10 +338,6 @@ nnoremap <leader>pv :wincmd v<bar> :Ex <bar> :vertical resize 30<CR>
 nnoremap <Leader>ps :Rg<SPACE>
 nnoremap <silent> <Leader>+ :vertical resize +5<CR>
 nnoremap <silent> <Leader>- :vertical resize -5<CR>
-
-
-
-
 
 
 
